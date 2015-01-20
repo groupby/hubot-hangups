@@ -1,4 +1,9 @@
-# Hubot Web Adapter
+# Hubot Hangouts Adapter
+
+# WIP - Will be functional soon
+
+
+
 
 An adapter for [Hubot](https://github.com/github/hubot) to work via HTTP. Great for your custom web chat interface.
 
