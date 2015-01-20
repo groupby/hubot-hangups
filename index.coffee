@@ -13,10 +13,10 @@ class WebAdapter extends Adapter
     message.replace(/\n/g, "<br>")
 
   createUser: (username, room) ->
-    user = @userForName username
+    user = @robot.brain.userForName username
     unless user?
       id = new Date().getTime().toString()
-      user = @userForId id
+      user = @robot.brain.userForId id
       user.name = username
 
     user.room = room
@@ -28,13 +28,15 @@ class WebAdapter extends Adapter
 
       message = if process.env.HUBOT_HTML_RESPONSE then @toHTML(strings.shift()) else strings.shift()
 
-      request.post(sendMessageUrl+user.room).form({
-        message: message,
-        from: "#{@robot.name}"
-      })
+      console.log 'send'
+#      request.post(sendMessageUrl+user.room).form({
+#        message: message,
+#        from: "#{@robot.name}"
+#      })
       @send user, strings...
 
   reply: (user, strings...) ->
+    console.log 'reply'
     @send user, strings.map((str) -> "#{user.user}: #{str}")...
 
   run: ->
@@ -43,18 +45,28 @@ class WebAdapter extends Adapter
     options = {}
 
     @robot.router.post '/receive/:room', (req, res) ->
-      user = self.createUser(req.body.from, req.params.room)
+      req.setEncoding('utf8')
+      req.on 'data', (rawData) ->
+        data = JSON.parse(rawData)
+        console.log data
 
-      if req.body.options
-        user.options = JSON.parse(req.body.options)
-      else
-        user.options = {}
+        user = self.createUser(data.fullName, req.params.room)
 
-      console.log "[#{req.params.room}] #{user.name} => #{req.body.message}"
+        if data.conversationId && data.userId
+          user.options = {
+            'conversationId' : data.conversationId,
+            'userId' : data.userId
+          }
 
-      res.setHeader 'content-type', 'text/html'
-      self.receive new TextMessage(user, req.body.message)
-      res.end 'received'
+          console.log "[#{req.params.room}] #{user.name} => #{data.message}"
+
+          res.setHeader 'content-type', 'text/html'
+          self.receive new TextMessage(user, data.message)
+          res.end 'received'
+        else
+          console.log 'Invalid user options'
+          res.setHeader 'content-type', 'text/html'
+          res.end 'received'
 
     self.emit "connected"
 
