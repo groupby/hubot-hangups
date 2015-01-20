@@ -12,8 +12,10 @@ import hangups
 from hangups.ui.utils import get_conv_name
 import config
 import handlers
-import hubot_handler
 
+import threading
+import multiprocessing
+from hubot_handler import HubotHandler
 
 __version__ = '1.1'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -117,9 +119,18 @@ class HangupsBot(object):
             self._client.on_connect.add_observer(self._on_connect)
             self._client.on_disconnect.add_observer(self._on_disconnect)
 
+            self.output_pipe, self.input_pipe = multiprocessing.Pipe(duplex = False)
+
+            hubot = HubotHandler(self)
+            p = multiprocessing.Process(target=hubot.listen, args=(self.input_pipe,))
+            p.start()
+
             # Start asyncio event loop and connect to Hangouts 
             # If we are forcefully disconnected, try connecting again
             loop = asyncio.get_event_loop()
+
+            loop.add_reader(self.output_pipe.fileno(), self._on_new_response)
+
             for retry in range(self._max_retries):
                 try:
                     loop.run_until_complete(self._client.connect())
@@ -149,10 +160,6 @@ class HangupsBot(object):
 
         #start message
         asyncio.async(self._message_handler.handle(event))
-
-    # def handle_hubot_message(self):
-    #
-    #     asyncio.async(self._hubot_handler.listen())
 
     def handle_membership_change(self, conv_event):
         """Handle conversation membership change"""
@@ -253,11 +260,28 @@ class HangupsBot(object):
         except hangups.NetworkError:
             print('Failed to send message!')
 
+    def _on_new_response(self):
+
+        print('in new response')
+
+        while self.output_pipe.poll():
+
+            print('in while loop')
+
+            jsonData = self.output_pipe.recv()
+            conversation = self._conv_list.get(jsonData['conversationId'])
+            self.send_message(conversation, jsonData['message'])
+
     def _on_connect(self, initial_data):
         """Handle connecting for the first time"""
         print('Connected!')
 
-        self._hubot_handler = hubot_handler.HubotHandler(self)
+        # hubot = HubotHandler(self)
+        # t = threading.Thread(target=hubot.listen)
+        # t.daemon = True
+        # t.start()
+
+
 
         self._message_handler = handlers.MessageHandler(self)
 
@@ -265,9 +289,6 @@ class HangupsBot(object):
                                            initial_data.self_entity,
                                            initial_data.entities,
                                            initial_data.conversation_participants)
-
-        #for user in self._user_list.get_all():
-        #    print (user.full_name)
 
         self._conv_list = hangups.ConversationList(self._client,
                                                    initial_data.conversation_states,

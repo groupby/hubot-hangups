@@ -29,10 +29,26 @@ class WebAdapter extends Adapter
       message = if process.env.HUBOT_HTML_RESPONSE then @toHTML(strings.shift()) else strings.shift()
 
       console.log 'send'
-#      request.post(sendMessageUrl+user.room).form({
-#        message: message,
-#        from: "#{@robot.name}"
-#      })
+
+
+      response = {
+        fullName:user.user.name,
+        conversationId:user.user.options.conversationId,
+        userId:user.user.options.userId,
+        message:message
+      }
+
+      console.log response
+
+      options = {
+        url:'http://localhost:8081/proxy/',
+        method:'POST',
+        body:response,
+        json:true
+      }
+
+      request(options)
+
       @send user, strings...
 
   reply: (user, strings...) ->

@@ -30,18 +30,18 @@ class StringGeneratorWebService(object):
     # def DELETE(self):
     #     cherrypy.session.pop('mystring', None)
 
-if __name__ == '__main__':
-    conf = {
-        '/': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-#            'tools.sessions.on': True,
-            'tools.response_headers.on': True,
-            'tools.response_headers.headers': [('Content-Type', 'application/json')],
-            }
-    }
-
-    cherrypy.config.update({'server.socket_host': '127.0.0.1',
-                            'server.socket_port': 8081,
-                            })
-
-    cherrypy.quickstart(StringGeneratorWebService(), '/proxy/', conf)
+# if __name__ == '__main__':
+#     conf = {
+#         '/': {
+#             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+# #            'tools.sessions.on': True,
+#             'tools.response_headers.on': True,
+#             'tools.response_headers.headers': [('Content-Type', 'application/json')],
+#             }
+#     }
+#
+#     cherrypy.config.update({'server.socket_host': '127.0.0.1',
+#                             'server.socket_port': 8081,
+#                             })
+#
+#     cherrypy.quickstart(StringGeneratorWebService(), '/proxy/', conf)

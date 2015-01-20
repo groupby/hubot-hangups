@@ -1,10 +1,10 @@
 import logging, shlex, unicodedata, asyncio
-from cleverbot import ChatterBotFactory, ChatterBotType
+#from cleverbot import ChatterBotFactory, ChatterBotType
 import hangups
 import requests
 import json
 
-from commands import command
+#from commands import command
 
 url = "http://localhost:8080/receive/engineering"
 
@@ -21,37 +21,37 @@ class MessageHandler(object):
     blocked_list = []
 
     def __init__(self, bot, bot_command='/'):
-        from UtilBot import UtilBot
+        #from UtilBot import UtilBot
 
         self.bot = bot
         self.bot_command = bot_command
 
-        self.util_bot = UtilBot()
-        factory = ChatterBotFactory()
-        cleverbotter = factory.create(ChatterBotType.CLEVERBOT)
-        MessageHandler.cleversession = cleverbotter.create_session()
+        # self.util_bot = UtilBot()
+        # factory = ChatterBotFactory()
+        # cleverbotter = factory.create(ChatterBotType.CLEVERBOT)
+        # MessageHandler.cleversession = cleverbotter.create_session()
         MessageHandler.blocked_list = []
 
-    @staticmethod
-    def shutup(bot, event):
-        if bot.conv_settings[event.conv_id] is None:
-            bot.conv_settings[event.conv_id] = {}
-        settings = dict(bot.conv_settings[event.conv_id])
-        settings['clever'] = False
-        bot.conv_settings[event.conv_id] = settings
-
-    @staticmethod
-    def speakup(bot, event):
-        if MessageHandler.cleversession is None:
-            factory = ChatterBotFactory()
-            cleverbotter = factory.create(ChatterBotType.CLEVERBOT)
-            MessageHandler.cleversession = cleverbotter.create_session()
-
-        if bot.conv_settings[event.conv_id] is None:
-            bot.conv_settings[event.conv_id] = {}
-        settings = dict(bot.conv_settings[event.conv_id])
-        settings['clever'] = True
-        bot.conv_settings[event.conv_id] = settings
+    # @staticmethod
+    # def shutup(bot, event):
+    #     if bot.conv_settings[event.conv_id] is None:
+    #         bot.conv_settings[event.conv_id] = {}
+    #     settings = dict(bot.conv_settings[event.conv_id])
+    #     settings['clever'] = False
+    #     bot.conv_settings[event.conv_id] = settings
+    #
+    # @staticmethod
+    # def speakup(bot, event):
+    #     if MessageHandler.cleversession is None:
+    #         factory = ChatterBotFactory()
+    #         cleverbotter = factory.create(ChatterBotType.CLEVERBOT)
+    #         MessageHandler.cleversession = cleverbotter.create_session()
+    #
+    #     if bot.conv_settings[event.conv_id] is None:
+    #         bot.conv_settings[event.conv_id] = {}
+    #     settings = dict(bot.conv_settings[event.conv_id])
+    #     settings['clever'] = True
+    #     bot.conv_settings[event.conv_id] = settings
 
 
     @staticmethod
@@ -74,70 +74,72 @@ class MessageHandler(object):
             return
         if event.conv_id not in self.bot.conv_settings:
             self.bot.conv_settings[event.conv_id] = {}
-        try:
-            muted = self.bot.conv_settings[event.conv_id]['muted']
-        except KeyError:
-            muted = False
-            import commands
-
-            commands.unmute(self.bot, event)
-        try:
-            clever = self.bot.conv_settings[event.conv_id]['clever']
-        except KeyError:
-            clever = False
-            import commands
-
-            commands.shutup(self.bot, event)
+        # try:
+        #     muted = self.bot.conv_settings[event.conv_id]['muted']
+        # except KeyError:
+        #     muted = False
+        #     import commands
+        #
+        #     commands.unmute(self.bot, event)
+        # try:
+        #     clever = self.bot.conv_settings[event.conv_id]['clever']
+        # except KeyError:
+        #     clever = False
+        #     import commands
+        #
+        #     commands.shutup(self.bot, event)
         event.text = event.text.replace('\xa0', ' ')
         textuppers = str(event.text).upper()
-        if not event.text.startswith('/') and not muted:
-            from UtilBot import UtilBot
-
-            if event.text[0] == '#':
-                unhashtagged = self.util_bot.unhashtag(event.text)
-                if unhashtagged != None:
-                    segments = [hangups.ChatMessageSegment(x) if x != '\n' else hangups.ChatMessageSegment('\n',
-                                                                                                           segment_type=hangups.SegmentType.LINE_BREAK)
-                                for x in unhashtagged]
-                    self.bot.send_message_segments(event.conv, segments)
-            elif UtilBot.is_haiku(textuppers):
-                segments = [hangups.ChatMessageSegment('Haiku: ', is_bold=True),
-                            hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK)]
-                lines = UtilBot.convert_to_haiku(event.text)
-                if lines is not None:
-                    lines = lines.split('\n')
-                    for line in lines:
-                        segments.append(hangups.ChatMessageSegment(line))
-                        segments.append(hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK))
-                    segments.pop()
-                    self.bot.send_message_segments(event.conv, segments)
-            elif "🚮" in str(event.text):
-                self.bot.send_message(event.conv, "🚮")
-            elif textuppers.endswith('?!'):
-                self.bot.send_message(event.conv, "I agree with " + str(event.user.full_name) + '.')
-            elif "AMERICA" in textuppers:
-                self.bot.send_message(event.conv, "MURICA!!!!!!!")
-            elif "MURICA" in textuppers:
-                self.bot.send_message(event.conv, "Fuck yeah!")
-            elif (clever or (self.util_bot.nameregex.search(textuppers))) and MessageHandler.cleversession is not None:
-                self.bot.send_message(event.conv, MessageHandler.cleversession.think(str(event.text[5:])))
+        # if not event.text.startswith('/') and not muted:
+        #     from UtilBot import UtilBot
+        #
+        #     if event.text[0] == '#':
+        #         unhashtagged = self.util_bot.unhashtag(event.text)
+        #         if unhashtagged != None:
+        #             segments = [hangups.ChatMessageSegment(x) if x != '\n' else hangups.ChatMessageSegment('\n',
+        #                                                                                                    segment_type=hangups.SegmentType.LINE_BREAK)
+        #                         for x in unhashtagged]
+        #             self.bot.send_message_segments(event.conv, segments)
+        #     elif UtilBot.is_haiku(textuppers):
+        #         segments = [hangups.ChatMessageSegment('Haiku: ', is_bold=True),
+        #                     hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK)]
+        #         lines = UtilBot.convert_to_haiku(event.text)
+        #         if lines is not None:
+        #             lines = lines.split('\n')
+        #             for line in lines:
+        #                 segments.append(hangups.ChatMessageSegment(line))
+        #                 segments.append(hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK))
+        #             segments.pop()
+        #             self.bot.send_message_segments(event.conv, segments)
+        #     elif "🚮" in str(event.text):
+        #         self.bot.send_message(event.conv, "🚮")
+        #     elif textuppers.endswith('?!'):
+        #         self.bot.send_message(event.conv, "I agree with " + str(event.user.full_name) + '.')
+        #     elif "AMERICA" in textuppers:
+        #         self.bot.send_message(event.conv, "MURICA!!!!!!!")
+        #     elif "MURICA" in textuppers:
+        #         self.bot.send_message(event.conv, "Fuck yeah!")
+        #     elif (clever or (self.util_bot.nameregex.search(textuppers))) and MessageHandler.cleversession is not None:
+        #         self.bot.send_message(event.conv, MessageHandler.cleversession.think(str(event.text[5:])))
 
         """Handle conversation event"""
         if logging.root.level == logging.DEBUG:
             event.print_debug()
 
         if not event.user.is_self and event.text:
-            if event.text.startswith('/'):
-                # Run command
-                if event.text[1] == '?':
-                    event.text = "/help"
-                yield from self.handle_command(event)
-            else:
-                # Forward messages
-                yield from self.handle_forward(event)
+            # if event.text.startswith('/'):
+            #     # Run command
+            #     if event.text[1] == '?':
+            #         event.text = "/help"
+            #     yield from self.handle_command(event)
+            # else:
+            #     # Forward messages
+            #     yield from self.handle_forward(event)
+            #
+            #     # Send automatic replies
+            #     yield from self.handle_autoreply(event)
 
-                # Send automatic replies
-                yield from self.handle_autoreply(event)
+            yield from self.handle_command(event)
 
     @asyncio.coroutine
     def handle_command(self, event):
@@ -180,8 +182,10 @@ class MessageHandler(object):
 
         #print(event)
         tempDict = {"fullName":"{}".format(event.user.full_name), "conversationId":"{}".format(event.conv_id),
-                    "userId":"{}".format(event.user_id.chat_id), "message":"{}".format(*line_args[0:])}
+                    "userId":"{}".format(event.user_id.chat_id), "message":"{}".format(event.text)}
         payload = json.dumps(tempDict)
+
+        print(payload)
 
         requests.post(url, data=payload)
 

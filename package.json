@@ -24,5 +24,32 @@
     "hangouts"
   ],
   "license": "MIT",
-  "readmeFilename": "readme.md"
+  "gitHead": "0687a7699df3832bef6d6b7d2930506e1d13e1ad",
+  "bugs": {
+    "url": "https://github.com/groupby/hubot-hangups/issues"
+  },
+  "homepage": "https://github.com/groupby/hubot-hangups",
+  "_id": "hubot-hangups@0.0.1",
+  "scripts": {},
+  "_shasum": "dd966e831c5ea00fafb36aaa5f11da5f605abe28",
+  "_from": "hubot-hangups@>0.0.0",
+  "_npmVersion": "2.1.14",
+  "_nodeVersion": "0.10.33",
+  "_npmUser": {
+    "name": "groupby",
+    "email": "op@groupbyinc.com"
+  },
+  "maintainers": [
+    {
+      "name": "groupby",
+      "email": "op@groupbyinc.com"
+    }
+  ],
+  "dist": {
+    "shasum": "dd966e831c5ea00fafb36aaa5f11da5f605abe28",
+    "tarball": "http://registry.npmjs.org/hubot-hangups/-/hubot-hangups-0.0.1.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/hubot-hangups/-/hubot-hangups-0.0.1.tgz",
+  "readme": "ERROR: No README data found!"
 }
