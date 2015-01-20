@@ -1,8 +1,8 @@
 {
-  "name": "hubot-web",
-  "version": "0.1.0",
+  "name": "hubot-hangups",
+  "version": "1.0.0",
   "author": {
-    "name": "steve klise"
+    "name": "Maidi Lin"
   },
   "main": "./index",
   "devDependencies": {
@@ -15,12 +15,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/stevenklise/hubot-web.git"
+    "url": "git://github.com/groupby/hubot-hangups.git"
   },
   "keywords": [
     "hubot",
-    "http",
-    "adapter"
+    "adapter",
+    "hangups",
+    "hangouts"
   ],
   "license": "MIT",
   "readmeFilename": "readme.md"
