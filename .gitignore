@@ -36,3 +36,6 @@ node_modules
 *.v12
 *.csproj
 *.sln
+
+COOKIES
+cookies.txt
