@@ -1,5 +1,6 @@
-{"admins": ["USER_ID", "USER_ID", "USER_ID", "USER_ID", "USER_ID"],  
-  "autoreplies": [  
+{
+  "admins": ["USER_ID", "USER_ID", "USER_ID", "USER_ID", "USER_ID"],  
+    "autoreplies": [  
     [["hi", "hello"], "Hello world!"]  
       ],
         "autoreplies_enabled": false,  
@@ -22,4 +23,4 @@
               ]  
                   }  
                     }  
-                    }  
+}  

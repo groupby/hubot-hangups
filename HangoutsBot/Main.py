@@ -1,21 +1,15 @@
-# Add new /<command name> based commands in commands.py
-# Add any other new commands in handlers.py handle function.
-
-
-# Useless function? Maybe...
-import os
 import sys
+import inspect, os
 
 from hangupsbot import HangupsBot
 
+dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 class Main:
     bot = None
 
     @staticmethod
     def start():
-        # This commands auto updates the project. Please have Git installed and in your PATH variable on Windows.
-        #os.system("git pull")
 
         run = True
         index = -1
@@ -35,7 +29,7 @@ class Main:
             settings["event"] = None
 
         if settings["bot"] is None:
-            Main.bot = HangupsBot("cookies.txt", "config.json")
+            Main.bot = HangupsBot("{}/cookies.txt".format(dir), "{}/config.json".format(dir))
             settings["bot"] = Main.bot
         else:
             Main.bot = settings["bot"]

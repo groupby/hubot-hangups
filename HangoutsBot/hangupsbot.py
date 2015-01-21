@@ -7,13 +7,11 @@ import time
 import signal
 import traceback
 
-
 import hangups
 from hangups.ui.utils import get_conv_name
 import config
 import handlers
 
-import threading
 import multiprocessing
 from hubot_handler import HubotHandler
 
@@ -122,8 +120,8 @@ class HangupsBot(object):
             self.output_pipe, self.input_pipe = multiprocessing.Pipe(duplex = False)
 
             hubot = HubotHandler(self)
-            p = multiprocessing.Process(target=hubot.listen, args=(self.input_pipe,))
-            p.start()
+            self.p = multiprocessing.Process(target=hubot.listen, args=(self.input_pipe,))
+            self.p.start()
 
             # Start asyncio event loop and connect to Hangouts 
             # If we are forcefully disconnected, try connecting again
@@ -149,6 +147,11 @@ class HangupsBot(object):
 
     def stop(self):
         """Disconnect from Hangouts"""
+
+        self.input_pipe.close()
+        self.output_pipe.close()
+        self.p.terminate()
+
         asyncio.async(
             self._client.disconnect()
         ).add_done_callback(lambda future: future.result())
@@ -161,47 +164,47 @@ class HangupsBot(object):
         #start message
         asyncio.async(self._message_handler.handle(event))
 
-    def handle_membership_change(self, conv_event):
-        """Handle conversation membership change"""
-
-        # TODO Translate this....
-        event = ConversationEvent(self, conv_event)
-
-        # Don't handle events caused by the bot himself
-        if event.user.is_self:
-            return
-
-        # Test if watching for membership changes is enabled
-        if not self.get_config_suboption(event.conv_id, 'membership_watching_enabled'):
-            return
-
-        # Generate list of added or removed users
-        event_users = [event.conv.get_user(user_id) for user_id
-                       in event.conv_event.participant_ids]
-        names = ', '.join([user.full_name for user in event_users])
-
-        # JOIN
-        if event.conv_event.type_ == hangups.MembershipChangeType.JOIN:
-            # Test if user who added new participants is admin
-            admins_list = self.get_config_suboption(event.conv_id, 'admins')
-            if event.user_id.chat_id in admins_list:
-                self.send_message(event.conv,
-                                  '{}: Ahoj, {} mezi nás!'.format(names,
-                                                                  'vítejte' if len(event_users) > 1 else 'vítej'))
-            else:
-                segments = [hangups.ChatMessageSegment('!!! POZOR !!!', is_bold=True),
-                            hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
-                            hangups.ChatMessageSegment('{} neoprávněně přidal do tohoto Hangoutu uživatele {}!'.format(
-                                event.user.full_name, names)),
-                            hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
-                            hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
-                            hangups.ChatMessageSegment('{}: Opusťte prosím urychleně tento Hangout!'.format(names))]
-                self.send_message_segments(event.conv, segments)
-        # LEAVE
-        else:
-            self.send_message(event.conv,
-                              '{} nám {} košem :-( Řekněte pá pá!'.format(names,
-                                                                          'dali' if len(event_users) > 1 else 'dal'))
+    # def handle_membership_change(self, conv_event):
+    #     """Handle conversation membership change"""
+    #
+    #     # TODO Translate this....
+    #     event = ConversationEvent(self, conv_event)
+    #
+    #     # Don't handle events caused by the bot himself
+    #     if event.user.is_self:
+    #         return
+    #
+    #     # Test if watching for membership changes is enabled
+    #     if not self.get_config_suboption(event.conv_id, 'membership_watching_enabled'):
+    #         return
+    #
+    #     # Generate list of added or removed users
+    #     event_users = [event.conv.get_user(user_id) for user_id
+    #                    in event.conv_event.participant_ids]
+    #     names = ', '.join([user.full_name for user in event_users])
+    #
+    #     # JOIN
+    #     if event.conv_event.type_ == hangups.MembershipChangeType.JOIN:
+    #         # Test if user who added new participants is admin
+    #         admins_list = self.get_config_suboption(event.conv_id, 'admins')
+    #         if event.user_id.chat_id in admins_list:
+    #             self.send_message(event.conv,
+    #                               '{}: Ahoj, {} mezi nás!'.format(names,
+    #                                                               'vítejte' if len(event_users) > 1 else 'vítej'))
+    #         else:
+    #             segments = [hangups.ChatMessageSegment('!!! POZOR !!!', is_bold=True),
+    #                         hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
+    #                         hangups.ChatMessageSegment('{} neoprávněně přidal do tohoto Hangoutu uživatele {}!'.format(
+    #                             event.user.full_name, names)),
+    #                         hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
+    #                         hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
+    #                         hangups.ChatMessageSegment('{}: Opusťte prosím urychleně tento Hangout!'.format(names))]
+    #             self.send_message_segments(event.conv, segments)
+    #     # LEAVE
+    #     else:
+    #         self.send_message(event.conv,
+    #                           '{} nám {} košem :-( Řekněte pá pá!'.format(names,
+    #                                                                       'dali' if len(event_users) > 1 else 'dal'))
 
     def handle_rename(self, conv_event):
         """Handle conversation rename"""
@@ -246,11 +249,13 @@ class HangupsBot(object):
         """Get config suboption for conversation (or global option if not defined)"""
         try:
             suboption = self.config['conversations'][conv_id][option]
+
         except KeyError:
             try:
                 suboption = self.config[option]
             except KeyError:
                 suboption = None
+
         return suboption
 
     def _on_message_sent(self, future):
@@ -262,26 +267,26 @@ class HangupsBot(object):
 
     def _on_new_response(self):
 
-        print('in new response')
-
         while self.output_pipe.poll():
-
-            print('in while loop')
 
             jsonData = self.output_pipe.recv()
             conversation = self._conv_list.get(jsonData['conversationId'])
-            self.send_message(conversation, jsonData['message'])
+            segments = []
+            broken = jsonData['message'].split('\n')
+
+            if len(broken) > 1:
+                for i in range(0,len(broken)):
+                    segments.append(hangups.ChatMessageSegment(broken[i]))
+                    segments.append(hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK))
+
+                self.send_message_segments(conversation, segments)
+
+            else:
+                self.send_message(conversation, jsonData['message'])
 
     def _on_connect(self, initial_data):
         """Handle connecting for the first time"""
         print('Connected!')
-
-        # hubot = HubotHandler(self)
-        # t = threading.Thread(target=hubot.listen)
-        # t.daemon = True
-        # t.start()
-
-
 
         self._message_handler = handlers.MessageHandler(self)
 

@@ -4,10 +4,9 @@ TextMessage = require('hubot').TextMessage
 request = require('request')
 string = require("string")
 
-# sendmessageURL domain.com/messages/new/channel/ + user.channel
-sendMessageUrl = process.env.HUBOT_REST_SEND_URL
+port = 8081
 
-class WebAdapter extends Adapter
+class HangoutsAdapter extends Adapter
   toHTML: (message) ->
     # message = string(message).escapeHTML().s
     message.replace(/\n/g, "<br>")
@@ -28,9 +27,6 @@ class WebAdapter extends Adapter
 
       message = if process.env.HUBOT_HTML_RESPONSE then @toHTML(strings.shift()) else strings.shift()
 
-      console.log 'send'
-
-
       response = {
         fullName:user.user.name,
         conversationId:user.user.options.conversationId,
@@ -38,10 +34,8 @@ class WebAdapter extends Adapter
         message:message
       }
 
-      console.log response
-
       options = {
-        url:'http://localhost:8081/proxy/',
+        url:"http://localhost:#{port}/proxy/",
         method:'POST',
         body:response,
         json:true
@@ -52,19 +46,20 @@ class WebAdapter extends Adapter
       @send user, strings...
 
   reply: (user, strings...) ->
-    console.log 'reply'
     @send user, strings.map((str) -> "#{user.user}: #{str}")...
 
   run: ->
     self = @
-
     options = {}
+    hangoutsBotPath = __dirname+'/HangoutsBot/Main.py'
+    py = 'python3.3'
+
+    @hangoutsBot = require('child_process').spawn(py, [hangoutsBotPath])
 
     @robot.router.post '/receive/:room', (req, res) ->
       req.setEncoding('utf8')
       req.on 'data', (rawData) ->
         data = JSON.parse(rawData)
-        console.log data
 
         user = self.createUser(data.fullName, req.params.room)
 
@@ -84,7 +79,17 @@ class WebAdapter extends Adapter
           res.setHeader 'content-type', 'text/html'
           res.end 'received'
 
+    @hangoutsBot.on 'exit', (code) =>
+      @robot.logger.error "Lost connection with HangoutsBot... Exiting"
+      process.nextTick -> process.exit(1)
+    @hangoutsBot.on "uncaughtException", (err) =>
+      @robot.logger.error "#{err}"
+    process.on "uncaughtException", (err) =>
+      @robot.logger.error "#{err}"
+    process.on "exit", =>
+      @hangoutsBot.kill()
+
     self.emit "connected"
 
 exports.use = (robot) ->
-  new WebAdapter robot
+  new HangoutsAdapter robot

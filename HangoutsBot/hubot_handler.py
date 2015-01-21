@@ -1,8 +1,8 @@
-import logging, shlex, unicodedata, asyncio
-import hangups
-
 import json
 import cherrypy
+
+host = '127.0.0.1'
+port = 8081
 
 class HubotHandler(object):
 
@@ -14,14 +14,13 @@ class HubotHandler(object):
         conf = {
             '/': {
                 'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-                #            'tools.sessions.on': True,
                 'tools.response_headers.on': True,
                 'tools.response_headers.headers': [('Content-Type', 'application/json')],
                 }
         }
 
-        cherrypy.config.update({'server.socket_host': '127.0.0.1',
-                            'server.socket_port': 8081,
+        cherrypy.config.update({'server.socket_host': host,
+                            'server.socket_port': port,
                             })
 
         cherrypy.quickstart(HubotHandlerService(self.bot, input_pipe), '/proxy/', conf)
@@ -36,23 +35,12 @@ class HubotHandlerService(object):
 
     @cherrypy.tools.accept(media='application/json')
     def POST(self, length=8):
-        # some_string = ''.join(random.sample(string.hexdigits, int(length)))
-        # cherrypy.session['mystring'] = some_string
-        # return some_string
-        print('in POST')
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
         body = json.loads(rawbody.decode('utf-8'))
 
-        print(body)
+        print('in post')
 
         self.input_pipe.send(body)
 
-
-
-# test = HubotHandler()
-# #asyncio.async(test.listen)
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(test.listen())
-# loop.close()
