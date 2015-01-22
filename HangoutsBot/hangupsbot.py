@@ -12,6 +12,7 @@ from hangups.ui.utils import get_conv_name
 import config
 import handlers
 
+import re
 import multiprocessing
 from hubot_handler import HubotHandler
 
@@ -208,23 +209,23 @@ class HangupsBot(object):
     #                           '{} nám {} košem :-( Řekněte pá pá!'.format(names,
     #                                                                       'dali' if len(event_users) > 1 else 'dal'))
 
-    def handle_rename(self, conv_event):
-        """Handle conversation rename"""
-        event = ConversationEvent(self, conv_event)
-
-        # Don't handle events caused by the bot himself
-        if event.user.is_self:
-            return
-
-        # Test if watching for conversation rename is enabled
-        if not self.get_config_suboption(event.conv_id, 'rename_watching_enabled'):
-            return
-
-        # Only print renames for now...
-        if event.conv_event.new_name == '':
-            print('{} cleared the conversation name'.format(event.user.first_name))
-        else:
-            print('{} renamed the conversation to {}'.format(event.user.first_name, event.conv_event.new_name))
+    # def handle_rename(self, conv_event):
+    #     """Handle conversation rename"""
+    #     event = ConversationEvent(self, conv_event)
+    #
+    #     # Don't handle events caused by the bot himself
+    #     if event.user.is_self:
+    #         return
+    #
+    #     # Test if watching for conversation rename is enabled
+    #     if not self.get_config_suboption(event.conv_id, 'rename_watching_enabled'):
+    #         return
+    #
+    #     # Only print renames for now...
+    #     if event.conv_event.new_name == '':
+    #         print('{} cleared the conversation name'.format(event.user.first_name))
+    #     else:
+    #         print('{} renamed the conversation to {}'.format(event.user.first_name, event.conv_event.new_name))
 
     def send_message(self, conversation, text):
         """"Send simple chat message"""
@@ -284,6 +285,8 @@ class HangupsBot(object):
                 self.send_message_segments(conversation, segments)
 
             else:
+                # r = re.compile(r"(http://[^ ]+)")
+                # self.send_message(conversation, r.sub(r'<a href="\1">\1</a>', jsonData['message']))
                 self.send_message(conversation, jsonData['message'])
 
     def _on_connect(self, initial_data):
@@ -303,19 +306,19 @@ class HangupsBot(object):
                                                    initial_data.sync_timestamp)
         self._conv_list.on_event.add_observer(self._on_event)
 
-        print('Conversations:')
-        for c in self.list_conversations():
-            print('  {} ({})'.format(get_conv_name(c, truncate=True), c.id_))
-        print()
+        # print('Conversations:')
+        # for c in self.list_conversations():
+        #     print('  {} ({})'.format(get_conv_name(c, truncate=True), c.id_))
+        # print()
 
     def _on_event(self, conv_event):
         """Handle conversation events"""
         if isinstance(conv_event, hangups.ChatMessageEvent):
             self.handle_chat_message(conv_event)
-        elif isinstance(conv_event, hangups.MembershipChangeEvent):
-            self.handle_membership_change(conv_event)
-        elif isinstance(conv_event, hangups.RenameEvent):
-            self.handle_rename(conv_event)
+        # elif isinstance(conv_event, hangups.MembershipChangeEvent):
+        #     self.handle_membership_change(conv_event)
+        # elif isinstance(conv_event, hangups.RenameEvent):
+        #     self.handle_rename(conv_event)
 
     def _on_disconnect(self):
         """Handle disconnecting"""

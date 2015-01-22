@@ -31,6 +31,7 @@ class HangoutsAdapter extends Adapter
         userId:user.user.options.userId,
         message:message
       }
+      response.message = response.fullName + ': ' + response.message
 
       options = {
         url:"http://localhost:#{port}/proxy/",
@@ -56,30 +57,19 @@ class HangoutsAdapter extends Adapter
     @hangoutsBot.stdout.pipe(process.stdout,{ end: false })
     process.stdin.resume()
     process.stdin.pipe(@hangoutsBot.stdin,{ end: false })
-
     @hangoutsBot.stdin.on 'end', ->
       process.stdout.write('Hangouts stream ended.')
-
     @hangoutsBot.on 'exit', (code) ->
       process.exit(code)
 
-
-#    botStdin = @hangoutsBot.stdin
-#    require('tty').setRawMode(true)
-#    stdin.on 'keypress', (char) ->
-#      botStdin.write char
-#
-#    @hangoutsBot.stdout.on 'data', (data) ->
-#      if data != undefined
-#        stdout.write data
-##        if data.toString() == 'Email: '
-##          botStdin.write 'data', (data) ->
-##            if data != undefined
-##              console.log data.toString()
-
     @robot.router.post '/receive/:room', (req, res) ->
       req.setEncoding('utf8')
-      req.on 'data', (rawData) ->
+
+      rawData = ''
+      req.on 'data', (data) ->
+        rawData += data
+
+      req.on 'end', () ->
         data = JSON.parse(rawData)
 
         user = self.createUser(data.fullName, req.params.room)

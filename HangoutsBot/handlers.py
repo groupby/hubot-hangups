@@ -28,6 +28,8 @@ class MessageHandler(object):
     def handle_command(self, event):
         """Handle command messages"""
 
+        event.print_debug()
+
         tempDict = {"fullName":"{}".format(event.user.full_name), "conversationId":"{}".format(event.conv_id),
                     "userId":"{}".format(event.user_id.chat_id), "message":"{}".format(event.text)}
         payload = json.dumps(tempDict)
