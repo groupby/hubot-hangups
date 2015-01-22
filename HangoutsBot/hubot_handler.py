@@ -40,7 +40,5 @@ class HubotHandlerService(object):
         rawbody = cherrypy.request.body.read(int(cl))
         body = json.loads(rawbody.decode('utf-8'))
 
-        print('in post')
-
         self.input_pipe.send(body)
 

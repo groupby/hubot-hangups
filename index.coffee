@@ -5,11 +5,9 @@ request = require('request')
 string = require("string")
 
 port = 8081
+py = 'python3.3'
 
 class HangoutsAdapter extends Adapter
-  toHTML: (message) ->
-    # message = string(message).escapeHTML().s
-    message.replace(/\n/g, "<br>")
 
   createUser: (username, room) ->
     user = @robot.brain.userForName username
@@ -52,9 +50,32 @@ class HangoutsAdapter extends Adapter
     self = @
     options = {}
     hangoutsBotPath = __dirname+'/HangoutsBot/Main.py'
-    py = 'python3.3'
 
     @hangoutsBot = require('child_process').spawn(py, [hangoutsBotPath])
+
+    @hangoutsBot.stdout.pipe(process.stdout,{ end: false })
+    process.stdin.resume()
+    process.stdin.pipe(@hangoutsBot.stdin,{ end: false })
+
+    @hangoutsBot.stdin.on 'end', ->
+      process.stdout.write('Hangouts stream ended.')
+
+    @hangoutsBot.on 'exit', (code) ->
+      process.exit(code)
+
+
+#    botStdin = @hangoutsBot.stdin
+#    require('tty').setRawMode(true)
+#    stdin.on 'keypress', (char) ->
+#      botStdin.write char
+#
+#    @hangoutsBot.stdout.on 'data', (data) ->
+#      if data != undefined
+#        stdout.write data
+##        if data.toString() == 'Email: '
+##          botStdin.write 'data', (data) ->
+##            if data != undefined
+##              console.log data.toString()
 
     @robot.router.post '/receive/:room', (req, res) ->
       req.setEncoding('utf8')

@@ -41,5 +41,4 @@ class Main:
         if run:
             Main.bot.run()
 
-
 Main().start()

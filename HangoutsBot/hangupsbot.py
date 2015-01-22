@@ -112,6 +112,8 @@ class HangupsBot(object):
         """Connect to Hangouts and run bot"""
         cookies = self.login(self._cookies_path)
         if cookies:
+            print("You're logged in!")
+
             # Create Hangups client
             self._client = hangups.Client(cookies)
             self._client.on_connect.add_observer(self._on_connect)
