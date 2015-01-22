@@ -1,6 +1,6 @@
 {
   "name": "hubot-hangups",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Hubot adapter for Google Hangouts",
   "main": "index.coffee",
   "scripts": {
