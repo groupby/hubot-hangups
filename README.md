@@ -13,3 +13,9 @@ In index.coffee set you 'py' to whatever command that uses Python 3.3 or higher 
 
 Start hubot with 'bin/hubot -a hangups' and it should connect to hangups on its own.
 After it prompts and accepted it's credentials, it will automatically start.
+
+## Community
+
+This is a work in progress and we encourage the community to point out bugs, suggest changes, etc. Obviously we will focus on the things that we need it to do first, but new ideas are always welcome.
+
+We plan on making using this adapter as part of our daily workflow in the future so it will be stable and reliable as we can make it.
