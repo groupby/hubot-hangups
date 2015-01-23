@@ -24,3 +24,6 @@ We plan on making using this adapter as part of our daily workflow in the future
 
 - [wardellchandler](https://github.com/wardellchandler/HangoutsBot) for his version of the HangoutsBot
 - [tdryer](https://github.com/tdryer/hangups) for the wonderful Hangups API.  
+- 
+
+This robot has been brought to you by [GroupBy](http://www.groupbyinc.com)
