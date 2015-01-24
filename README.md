@@ -4,13 +4,15 @@ An adapter for [Hubot](https://github.com/github/hubot) to work with Google Hang
 
 ## Setup
 
-Right now it's a bit of a manual process:
+Soon this will be automated, but right now it's a bit of a manual process:
 
 1. Install CherryPy (make sure it's going into your python 3.x location)
 2. Install requests (make sure it's going into your python 3.x location)
-3. Install pip (if not already installed)
-4. Install robobrowser from pip install git+https://github.com/xxinfinityxx/robobrowser
-3. Set the environment variable in node_module/hubot-hangups/index.coffee
+3. Install pip and setuptools (if not already installed)
+4. Install this branch of robobrowser with `pip install git+https://github.com/xxinfinityxx/robobrowser`
+3. Set the `py` variable at the top of node_module/hubot-hangups/index.coffee to the python command that runs 3.3+
+4. Run the `ssetup.py install` inside the hangups application folder in node_modules/hubot-hangups/hangups/
+5. Go back up to your hubot folder and run the adpater. It should prompt you for email and password of the account.
 
 You will need Python 3.3 or higher since the hangups api only works with 3.3+.
 After getting python you will need to install [CherryPy](http://cherrypy.readthedocs.org/en/latest/install.html) and [requests](http://docs.python-requests.org/en/latest/user/install/#install).
