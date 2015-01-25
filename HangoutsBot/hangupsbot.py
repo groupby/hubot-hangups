@@ -229,13 +229,13 @@ class HangupsBot(object):
 
     def send_message(self, conversation, text):
         """"Send simple chat message"""
-        self.send_message_segments(conversation, [hangups.ChatMessageSegment(text)])
+        # Ignore if the user hasn't typed a message.
+        if len(text) == 0:
+            return
+        self.send_message_segments(conversation, hangups.ChatMessageSegment.from_str(text))
 
     def send_message_segments(self, conversation, segments):
         """Send chat message segments"""
-        # Ignore if the user hasn't typed a message.
-        if len(segments) == 0:
-            return
         # XXX: Exception handling here is still a bit broken. Uncaught
         # exceptions in _on_message_sent will only be logged.
         asyncio.async(
