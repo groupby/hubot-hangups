@@ -14,7 +14,7 @@ An adapter for [Hubot](https://github.com/github/hubot) to work with Google Hang
 2. Setup an environment variable that so the adapter can use your installation of python 3.3+. 
     This should be something like `python`, `python3`, `python3.3`, or something similar. The entire path to your installed python 3.3+ instance will work as well.
 3. Run the adapter with `bin/hubot -a hangups'.
-    - If you have no set the environment variable in step 2, it will warn you and quit.
+    - If you have not set the environment variable in step 2, it will warn you and quit.
     - Assuming you've set the environment variable correctly it will attempt to automatically install and run the python scripts necessary for this adapter. If this fails, it will say so.
     - If it passes the python script install, it will prompt you for a username, password, and possibly two-factor PIN for the account to be used for Google Hangouts. You'll only have to enter this once, it's cached in the cookies.txt.
 4. That's it! It should respond to `hubot ping` if you send that to the Hangouts account you've linked to the adapter.
