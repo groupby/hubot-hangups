@@ -7,7 +7,6 @@ exec = require('sync-exec')
 path = require('path')
 
 port = 8081
-py = 'python3.3'
 
 class HangoutsAdapter extends Adapter
 
@@ -76,7 +75,7 @@ class HangoutsAdapter extends Adapter
     options = {}
     hangoutsBotPath = __dirname+'/HangoutsBot/Main.py'
 
-    @hangoutsBot = require('child_process').spawn(py, [hangoutsBotPath])
+    @hangoutsBot = require('child_process').spawn(pythonPath, [hangoutsBotPath])
 
     @hangoutsBot.stdout.pipe(process.stdout,{ end: false })
     process.stdin.resume()
