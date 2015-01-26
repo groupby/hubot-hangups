@@ -21,6 +21,13 @@ Now with easier, automated setup!
     - If it passes the python script install, it will prompt you for a username, password, and possibly two-factor PIN for the account to be used for Google Hangouts. You'll only have to enter this once, it's cached in the cookies.txt.
 4. That's it! It should respond to `hubot ping` if you send that to the Hangouts account you've linked to the adapter.
 
+### ToDo:
+
+- Create env variables for ports. It's currently hardcoded to using 8081 for hubot -> hangoutsBot, and 8080 for hangoutsBot -> hubot. 
+- Optional, basic, whitelist-based security
+- Move cookie cache to a better place, and add env variable for it's definition
+- Move all these env variables to a config file
+
 ## Community
 
 This is a work in progress and we encourage the community to point out bugs, suggest changes, etc. Obviously we will focus on the things that we need it to do first, but new ideas are always welcome.
