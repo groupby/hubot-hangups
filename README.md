@@ -2,27 +2,22 @@
 
 An adapter for [Hubot](https://github.com/github/hubot) to work with Google Hangouts. This adapter uses a third-party client for google hangouts, [Hangups](https://github.com/tdryer/hangups), and a proxy, [HangoutsBot](https://github.com/wardellchandler/HangoutsBot), to connect to Hangouts.
 
+## Requirements
+
+- Python 3.3+ (including pip and setuptools)
+- Existing hubot instance to attach it to (including node and npm)
+
 ## Setup
 
-Soon this will be automated, but right now it's a bit of a manual process:
-
-1. Install CherryPy (make sure it's going into your python 3.x location)
-2. Install requests (make sure it's going into your python 3.x location)
-3. Install pip and setuptools (if not already installed)
-4. Install this branch of robobrowser with `pip install git+https://github.com/xxinfinityxx/robobrowser`
-3. Set the `py` variable at the top of node_module/hubot-hangups/index.coffee to the python command that runs 3.3+
-4. Run the `ssetup.py install` inside the hangups application folder in node_modules/hubot-hangups/hangups/
-5. Go back up to your hubot folder and run the adpater. It should prompt you for email and password of the account.
-
-You will need Python 3.3 or higher since the hangups api only works with 3.3+.
-After getting python you will need to install [CherryPy](http://cherrypy.readthedocs.org/en/latest/install.html) and [requests](http://docs.python-requests.org/en/latest/user/install/#install).
-
-In index.coffee and hubot_handler.py set your 'port' to whichever port you want to use between the two locally.
-In handler.py set your 'url' to whatever url you want to use hubot to receive messages from.
-In index.coffee set you 'py' to whatever command that uses Python 3.3 or higher (i.e. python, python3.3).
-
-Start hubot with 'bin/hubot -a hangups' and it should connect to hangups on its own.
-After it prompts and accepted it's credentials, it will automatically start.
+1. In your hubot instance directory run `npm install hubot-hangups --save`
+    This will download the adapter and save it into your package.json
+2. Setup an environment variable that so the adapter can use your installation of python 3.3+. 
+    This should be something like `python`, `python3`, `python3.3`, or something similar. The entire path to your installed python 3.3+ instance will work as well.
+3. Run the adapter with `bin/hubot -a hangups'.
+    - If you have no set the environment variable in step 2, it will warn you and quit.
+    - Assuming you've set the environment variable correctly it will attempt to automatically install and run the python scripts necessary for this adapter. If this fails, it will say so.
+    - If it passes the python script install, it will prompt you for a username, password, and possibly two-factor PIN for the account to be used for Google Hangouts. You'll only have to enter this once, it's cached in the cookies.txt.
+4. That's it! It should respond to `hubot ping` if you send that to the Hangouts account you've linked to the adapter.
 
 ## Community
 
