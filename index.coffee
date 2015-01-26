@@ -50,8 +50,8 @@ class HangoutsAdapter extends Adapter
 
   run: ->
     pythonPath = process.env.HUBOT_HANGUPS_PYTHON
-    if pythonPath && pythonPath.length > 0
-      console.log "Python path is " + process.env.HUBOT_PYTHON
+    if ((pythonPath?) && (pythonPath.length > 0))
+      console.log "Python path is " + pythonPath
     else
       console.log 'ERROR: Set the HUBOT_HANGUPS_PYTHON env variable to your version of python 3.3 (eg python, python3, python3.3, etc'
       process.exit(1)
@@ -59,16 +59,22 @@ class HangoutsAdapter extends Adapter
     checkInstallScript = path.resolve(__dirname, 'checkInstall.py')
     installScript = path.resolve(__dirname, 'setup.py')
 
+    console.log "checkInstall script " + pythonPath + " " + checkInstallScript
+
     result = exec(pythonPath + " " + checkInstallScript)
 
-    if (result.stderr.length > 0)
-      console.log "ERROR: Some python modules missing, see errors above. Attempting automated install."
+    console.log "result " + JSON.stringify(result)
+
+    if (result.status > 0)
+      console.log "ERROR: Some python modules missing." + result.stdout + "Attempting automated install, please wait...."
       installCmd = pythonPath + " " + installScript + " install"
       result = exec(installCmd)
 
-      if (result.stderr.length > 0)
+      if (result.status > 0)
         console.error "Could not automatically run " + installCmd
         process.exit(1)
+      else
+        console.log "Install succesful. Starting hubot-hangouts"
 
 
     self = @
