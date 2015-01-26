@@ -167,66 +167,6 @@ class HangupsBot(object):
         #start message
         asyncio.async(self._message_handler.handle(event))
 
-    # def handle_membership_change(self, conv_event):
-    #     """Handle conversation membership change"""
-    #
-    #     # TODO Translate this....
-    #     event = ConversationEvent(self, conv_event)
-    #
-    #     # Don't handle events caused by the bot himself
-    #     if event.user.is_self:
-    #         return
-    #
-    #     # Test if watching for membership changes is enabled
-    #     if not self.get_config_suboption(event.conv_id, 'membership_watching_enabled'):
-    #         return
-    #
-    #     # Generate list of added or removed users
-    #     event_users = [event.conv.get_user(user_id) for user_id
-    #                    in event.conv_event.participant_ids]
-    #     names = ', '.join([user.full_name for user in event_users])
-    #
-    #     # JOIN
-    #     if event.conv_event.type_ == hangups.MembershipChangeType.JOIN:
-    #         # Test if user who added new participants is admin
-    #         admins_list = self.get_config_suboption(event.conv_id, 'admins')
-    #         if event.user_id.chat_id in admins_list:
-    #             self.send_message(event.conv,
-    #                               '{}: Ahoj, {} mezi nás!'.format(names,
-    #                                                               'vítejte' if len(event_users) > 1 else 'vítej'))
-    #         else:
-    #             segments = [hangups.ChatMessageSegment('!!! POZOR !!!', is_bold=True),
-    #                         hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
-    #                         hangups.ChatMessageSegment('{} neoprávněně přidal do tohoto Hangoutu uživatele {}!'.format(
-    #                             event.user.full_name, names)),
-    #                         hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
-    #                         hangups.ChatMessageSegment('\n', hangups.SegmentType.LINE_BREAK),
-    #                         hangups.ChatMessageSegment('{}: Opusťte prosím urychleně tento Hangout!'.format(names))]
-    #             self.send_message_segments(event.conv, segments)
-    #     # LEAVE
-    #     else:
-    #         self.send_message(event.conv,
-    #                           '{} nám {} košem :-( Řekněte pá pá!'.format(names,
-    #                                                                       'dali' if len(event_users) > 1 else 'dal'))
-
-    # def handle_rename(self, conv_event):
-    #     """Handle conversation rename"""
-    #     event = ConversationEvent(self, conv_event)
-    #
-    #     # Don't handle events caused by the bot himself
-    #     if event.user.is_self:
-    #         return
-    #
-    #     # Test if watching for conversation rename is enabled
-    #     if not self.get_config_suboption(event.conv_id, 'rename_watching_enabled'):
-    #         return
-    #
-    #     # Only print renames for now...
-    #     if event.conv_event.new_name == '':
-    #         print('{} cleared the conversation name'.format(event.user.first_name))
-    #     else:
-    #         print('{} renamed the conversation to {}'.format(event.user.first_name, event.conv_event.new_name))
-
     def send_message(self, conversation, text):
         """"Send simple chat message"""
         self.send_message_segments(conversation, [hangups.ChatMessageSegment(text)])
@@ -285,8 +225,6 @@ class HangupsBot(object):
                 self.send_message_segments(conversation, segments)
 
             else:
-                # r = re.compile(r"(http://[^ ]+)")
-                # self.send_message(conversation, r.sub(r'<a href="\1">\1</a>', jsonData['message']))
                 self.send_message(conversation, jsonData['message'])
 
     def _on_connect(self, initial_data):
@@ -306,19 +244,10 @@ class HangupsBot(object):
                                                    initial_data.sync_timestamp)
         self._conv_list.on_event.add_observer(self._on_event)
 
-        # print('Conversations:')
-        # for c in self.list_conversations():
-        #     print('  {} ({})'.format(get_conv_name(c, truncate=True), c.id_))
-        # print()
-
     def _on_event(self, conv_event):
         """Handle conversation events"""
         if isinstance(conv_event, hangups.ChatMessageEvent):
             self.handle_chat_message(conv_event)
-        # elif isinstance(conv_event, hangups.MembershipChangeEvent):
-        #     self.handle_membership_change(conv_event)
-        # elif isinstance(conv_event, hangups.RenameEvent):
-        #     self.handle_rename(conv_event)
 
     def _on_disconnect(self):
         """Handle disconnecting"""
