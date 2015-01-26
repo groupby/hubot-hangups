@@ -9,6 +9,8 @@ An adapter for [Hubot](https://github.com/github/hubot) to work with Google Hang
 
 ## Setup
 
+Now with easier, automated setup!
+
 1. In your hubot instance directory run `npm install hubot-hangups --save`
     This will download the adapter and save it into your package.json
 2. Setup an environment variable that so the adapter can use your installation of python 3.3+. 
