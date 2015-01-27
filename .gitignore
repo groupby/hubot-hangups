@@ -78,5 +78,5 @@ node_modules
 *.sln
 
 COOKIES
-cookies.txt
+HangoutsBot/cookies.txt
 log.txt

@@ -2,19 +2,19 @@
 # coding=utf-8
 from datetime import datetime
 import sys
-import asyncio
 import time
 import signal
 import traceback
+import multiprocessing
 
+import asyncio
 import hangups
 from hangups.ui.utils import get_conv_name
-import config
-import handlers
 
-import re
-import multiprocessing
-from hubot_handler import HubotHandler
+from . import handlers
+from . import config
+from HangoutsBot.hubot_handler import HubotHandler
+
 
 __version__ = '1.1'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -44,6 +44,7 @@ class HangupsBot(object):
     """Hangouts bot listening on all conversations"""
 
     def __init__(self, cookies_path, config_path, max_retries=5):
+
         self._client = None
         self._cookies_path = cookies_path
         self._max_retries = max_retries
@@ -169,15 +170,17 @@ class HangupsBot(object):
 
     def send_message(self, conversation, text):
         """"Send simple chat message"""
-        self.send_message_segments(conversation, [hangups.ChatMessageSegment(text)])
+        # Ignore if the user hasn't typed a message.
+        if len(text) == 0:
+            return
+        self.send_message_segments(conversation, hangups.ChatMessageSegment.from_str(text))
 
     def send_message_segments(self, conversation, segments):
         """Send chat message segments"""
-        # Ignore if the user hasn't typed a message.
-        if len(segments) == 0:
-            return
+
         # XXX: Exception handling here is still a bit broken. Uncaught
         # exceptions in _on_message_sent will only be logged.
+
         asyncio.async(
             conversation.send_message(segments)
         ).add_done_callback(self._on_message_sent)
@@ -204,7 +207,9 @@ class HangupsBot(object):
     def _on_message_sent(self, future):
         """Handle showing an error if a message fails to send"""
         try:
+            print('iii')
             future.result()
+            print('sdfsd')
         except hangups.NetworkError:
             print('Failed to send message!')
 

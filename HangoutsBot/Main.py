@@ -1,7 +1,9 @@
 import sys
-import inspect, os
+import inspect
+import os
 
-from hangupsbot import HangupsBot
+from .HangoutsBot.hangupsbot import HangupsBot
+
 
 dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
