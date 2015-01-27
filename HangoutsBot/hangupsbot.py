@@ -13,7 +13,7 @@ from hangups.ui.utils import get_conv_name
 
 from . import handlers
 from . import config
-from HangoutsBot.hubot_handler import HubotHandler
+from .hubot_handler import HubotHandler
 
 
 __version__ = '1.1'

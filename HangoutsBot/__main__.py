@@ -2,7 +2,7 @@ import sys
 import inspect
 import os
 
-from .HangoutsBot.hangupsbot import HangupsBot
+from .hangupsbot import HangupsBot
 
 
 dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -43,4 +43,5 @@ class Main:
         if run:
             Main.bot.run()
 
-Main().start()
+if __name__ == '__main__':
+    Main().start()

@@ -26,6 +26,8 @@ class HangoutsAdapter extends Adapter
 
       message = if process.env.HUBOT_HTML_RESPONSE then @toHTML(strings.shift()) else strings.shift()
 
+      console.log 'send'
+
       response = {
         fullName:user.user.name,
         conversationId:user.user.options.conversationId,
@@ -79,9 +81,10 @@ class HangoutsAdapter extends Adapter
 
     self = @
     options = {}
-    hangoutsBotPath = __dirname+'/HangoutsBot/Main.py'
+    hangoutsBotPath = __dirname+'/HangoutsBot'
+    tempPath = 'node_modules.hubot-hangups.HangoutsBot'
 
-    @hangoutsBot = require('child_process').spawn(pythonPath, [hangoutsBotPath])
+    @hangoutsBot = require('child_process').spawn(pythonPath, ['-m', tempPath])
 
     @hangoutsBot.stdout.pipe(process.stdout,{ end: false })
     process.stdin.resume()
@@ -114,6 +117,8 @@ class HangoutsAdapter extends Adapter
           res.setHeader 'content-type', 'text/html'
           self.receive new TextMessage(user, data.message)
           res.end 'received'
+
+          console.log 'end of recieve'
         else
           console.log 'Invalid user options'
           res.setHeader 'content-type', 'text/html'
