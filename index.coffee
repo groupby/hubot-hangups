@@ -10,12 +10,12 @@ port = 8081
 
 class HangoutsAdapter extends Adapter
 
-  createUser: (username, room) ->
-    user = @robot.brain.userForName username
+  createUser: (userData, room) ->
+    user = @robot.brain.userForName userData.fullName
     unless user?
-      id = new Date().getTime().toString()
+      id = userData.userId
       user = @robot.brain.userForId id
-      user.name = username
+      user.name = userData.fullName
 
     user.room = room
 
@@ -46,7 +46,8 @@ class HangoutsAdapter extends Adapter
       @send user, strings...
 
   reply: (user, strings...) ->
-    @send user, strings.map((str) -> "#{user.user}: #{str}")...
+    @send user, strings.map((str) -> "#{str}")...
+#    @send user, strings.map((str) -> "#{user.user.name}: #{str}")...
 
   run: ->
     pythonPath = process.env.HUBOT_HANGUPS_PYTHON
@@ -101,12 +102,13 @@ class HangoutsAdapter extends Adapter
       req.on 'end', () ->
         data = JSON.parse(rawData)
 
-        user = self.createUser(data.fullName, req.params.room)
+        user = self.createUser(data, req.params.room)
 
         if data.conversationId && data.userId
           user.options = {
             'conversationId' : data.conversationId,
-            'userId' : data.userId
+            'userId' : data.userId,
+            'email' : data.email #not populated by hangups currently
           }
 
           #console.log "[#{req.params.room}] #{user.name} => #{data.message}"
