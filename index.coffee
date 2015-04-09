@@ -112,7 +112,7 @@ class HangoutsAdapter extends Adapter
           }
 
           #console.log "[#{req.params.room}] #{user.name} => #{data.message}"
-
+          console.log data
           res.setHeader 'content-type', 'text/html'
           self.receive new TextMessage(user, data.message)
           res.end 'received'
