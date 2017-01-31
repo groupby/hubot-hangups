@@ -2,6 +2,8 @@ Please note, this project is no longer actively maintained as we moved to Slack.
 
 # Hubot Hangouts Adapter
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/groupby/hubot-hangups.svg)](https://greenkeeper.io/)
+
 An adapter for [Hubot](https://github.com/github/hubot) to work with Google Hangouts. This adapter uses a third-party client for google hangouts, [Hangups](https://github.com/tdryer/hangups), and a proxy, [HangoutsBot](https://github.com/wardellchandler/HangoutsBot), to connect to Hangouts.
 
 ## Requirements
